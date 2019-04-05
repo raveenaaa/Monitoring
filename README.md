@@ -12,21 +12,25 @@ A new technology that you have not been previously exposed to is [socket.io](htt
 
 Clone this repository, run `npm install`.
 
-Run `node main.js` to run the server.
+Run `npm start` to run the server. This command uses `nodemon` to automatically restart the server for you, everytime the code is changed.
 
-Run a local webserver in the www directory and open the monitoring application. You may use `npm install http-server -g`, but there are many other options.
+Run a local webserver in the www directory and open the monitoring application. You may use `npx http-server -d www`, but there are many other options.
 
 There is code running every 2 seconds that will broad cast basic stats to the web app:
 
-		setInterval( function () 
-		{
-			io.sockets.emit('heartbeat', 
-			{ 
-		        name: "Your Computer", cpu: cpuAverage(), memoryLoad: memoryLoad(),
-		        nodes: calculateColor()
-		   });
-		
-		}, 2000);
+``` js
+	setInterval( function () 
+	{
+		io.sockets.emit('heartbeat', 
+		{ 
+			name: "Your Computer", 
+			cpu: cpuAverage(), 
+			memoryLoad: memoryLoad(),
+			nodes: calculateColor()
+		});
+	
+	}, 2000);
+```
 
 ### Calculate Memory Load
 
