@@ -14,7 +14,7 @@ Clone this repository, run `npm install`.
 
 Run `npm start` to run the server. This command uses `nodemon` to automatically restart the server for you, everytime the code is changed.
 
-Run a local webserver in the www directory and open the monitoring application. You may use `npx http-server -d www`, but there are many other options.
+Run a local webserver in the www directory and open the monitoring application. You may use `npx http-server`, but there are many other options.
 
 There is code running every 2 seconds that will broad cast basic stats to the web app:
 
