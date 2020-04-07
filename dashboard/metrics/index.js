@@ -12,6 +12,9 @@ var servers =
 
 function start(app)
 {
+	////////////////////////////////////////////////////////////////////////////////////////
+	// DASHBOARD
+	////////////////////////////////////////////////////////////////////////////////////////
 	const io = require('socket.io')(3000);
 	// force websocket protocol, otherwise some browsers may try polling.
 	io.set('transports', ['websocket']);
@@ -42,105 +45,13 @@ function start(app)
 		}
 	});
 
-}
+	///////////////////////////////////////////////////////////////////////////////////////
+	// REDIS
+	///////////////////////////////////////////////////////////////////////////////////////
+	
+	let client = redis.createClient(6379, 'localhost', {});
 
-function memoryLoad()
-{
-	// console.log( os.totalmem(), os.freemem() );
-	return 0;
-}
 
-// Create function to get CPU information
-function cpuTicksAcrossCores() 
-{
-  //Initialise sum of idle and time of cores and fetch CPU info
-  var totalIdle = 0, totalTick = 0;
-  var cpus = os.cpus();
- 
-  //Loop through CPU cores
-  for(var i = 0, len = cpus.length; i < len; i++) 
-  {
-		//Select CPU core
-		var cpu = cpus[i];
-		//Total up the time in the cores tick
-		for(type in cpu.times) 
-		{
-			totalTick += cpu.times[type];
-		}     
-		//Total up the idle time of the core
-		totalIdle += cpu.times.idle;
-  }
- 
-  //Return the average Idle and Tick times
-  return {idle: totalIdle / cpus.length,  total: totalTick / cpus.length};
-}
-
-var startMeasure = cpuTicksAcrossCores();
-
-function cpuAverage()
-{
-	var endMeasure = cpuTicksAcrossCores(); 
- 
-	//Calculate the difference in idle and total time between the measures
-	var idleDifference = endMeasure.idle - startMeasure.idle;
-	var totalDifference = endMeasure.total - startMeasure.total;
- 
-	//Calculate the average percentage CPU usage
-	return 0;
-}
-
-function measureLatenancy(server)
-{
-	var options = 
-	{
-		url: server.url
-	};
-//	console.log("request to url");
-	// request(options, function (error, res, body) 
-	// {
-	// 	console.log( error || res.statusCode, server.url);
-	 	server.latency = 500;
-	// });
-	 return server.latency;
-}
-
-function calculateColor()
-{
-	// latency scores of all nodes, mapped to colors.
-	var nodes = nodeServers.map( measureLatenancy ).map( function(latency) 
-	{
-		var color = "#cccccc";
-		if( !latency )
-			return {color: color};
-		if( latency > 1000 )
-		{
-			color = "#ff0000";
-		}
-		else if( latency > 20 )
-		{
-			color = "#cc0000";
-		}
-		else if( latency > 15 )
-		{
-			color = "#ffff00";
-		}
-		else if( latency > 10 )
-		{
-			color = "#cccc00";
-		}
-		else if( latency > 5 )
-		{
-			color = "#00cc00";
-		}
-		else
-		{
-			color = "#00ff00";
-		}
-		console.log( latency );
-		return {color: color};
-	});
-	//console.log( nodes );
-	return nodes;
 }
 
 module.exports.start = start;

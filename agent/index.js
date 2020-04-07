@@ -33,6 +33,7 @@ async function main()
 
     await client.lpush('memory', agent.memoryLoad());
 
+    connection.quit();
 
 }
 
