@@ -5,10 +5,10 @@ const path = require('path');
 const os = require('os');
 
 const scpSync = require('../lib/scp');
-const sshSync = require('../lib/ssh');
+const VBox = require('../lib/VBoxManage');
 
-exports.command = 'setup';
-exports.desc = 'Provision and configure the configuration server';
+exports.command = 'up';
+exports.desc = 'Provision monitoring infrastructure';
 exports.builder = yargs => {
     yargs.options({
         privateKey: {
@@ -32,28 +32,30 @@ exports.handler = async argv => {
 
 async function run(privateKey) {
 
-    console.log(chalk.greenBright('Installing configuration server!'));
+    console.log(chalk.greenBright('Standing up infrastructure!'));
 
-    // VBoxManage controlvm hello natpf1 "service,tcp,,9000,,9000"
-
-    console.log(chalk.blueBright('Provisioning configuration server...'));
-    let result = child.spawnSync(`bakerx`, `run ansible-srv bionic --ip 192.168.33.10 --sync`.split(' '), {shell:true, stdio: 'inherit'} );
+    console.log(chalk.blueBright('Provisioning monitoring server...'));
+    let result = child.spawnSync(`bakerx`, `run monitor queues --ip 192.168.44.92 --sync`.split(' '), {shell:true, stdio: 'inherit'} );
     if( result.error ) { console.log(result.error); process.exit( result.status ); }
 
-    console.log(chalk.blueBright('Provisioning mattermost server...'));
-    result = child.spawnSync(`bakerx`, `run mattermost-srv bionic --ip 192.168.33.80`.split(' '), {shell:true, stdio: 'inherit'} );
+    console.log(chalk.blueBright('Provisioning alpine-01...'));
+    result = child.spawnSync(`bakerx`, `run alpine-01 alpine-node`.split(' '), {shell:true, stdio: 'inherit'} );
     if( result.error ) { console.log(result.error); process.exit( result.status ); }
+    VBox.execute('controlvm', 'alpine-01 natpf1 "service,tcp,,9001,,3000"');
 
-    console.log(chalk.blueBright('Installing privateKey on configuration server'));
-    let identifyFile = privateKey || path.join(os.homedir(), '.bakerx', 'insecure_private_key');
-    result = scpSync (identifyFile, 'vagrant@192.168.33.10:/home/vagrant/.ssh/mm_rsa');
+    console.log(chalk.blueBright('Provisioning alpine-01...'));
+    result = child.spawnSync(`bakerx`, `run alpine-02 alpine-node`.split(' '), {shell:true, stdio: 'inherit'} );
     if( result.error ) { console.log(result.error); process.exit( result.status ); }
+    VBox.execute('controlvm', 'alpine-02 natpf1 "service,tcp,,9002,,3000"');
 
-    console.log(chalk.blueBright('Running init script...'));
-    result = sshSync('/bakerx/cm/server-init.sh', 'vagrant@192.168.33.10');
+    console.log(chalk.blueBright('Provisioning alpine-03...'));
+    result = child.spawnSync(`bakerx`, `run alpine-03 alpine-node`.split(' '), {shell:true, stdio: 'inherit'} );
     if( result.error ) { console.log(result.error); process.exit( result.status ); }
+    VBox.execute('controlvm', 'alpine-03 natpf1 "service,tcp,,9003,,3000"');
 
-
+    // console.log(chalk.blueBright('Running init script...'));
+    // result = sshSync('/bakerx/cm/server-init.sh', 'vagrant@192.168.33.10');
+    // if( result.error ) { console.log(result.error); process.exit( result.status ); }
 
 }
 
