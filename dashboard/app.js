@@ -4,14 +4,10 @@ const path = require('path');
 const app = express();
 
 const metrics = require('./metrics/index');
-metrics.start();
+metrics.start(app);
 
 app.use(express.static(path.join(__dirname, 'www')));
 
-// app.use('/', function(req, res, next)
-// {
-//   res
-// });
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
