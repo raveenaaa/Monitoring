@@ -1,8 +1,6 @@
 // websocket server that website connects to.
-const io = require('socket.io')(3000);
 const os = require('os');
 const request = require('request');
-
 
 /// Servers data being monitored.
 var servers = 
@@ -12,25 +10,49 @@ var servers =
 	{name: "us-east-alpine-003",url:"http://localhost:9002", latency: 0, cpu: 0, memoryLoad: 0, status: "#cccccc"}
 ];
 
-function start()
+function start(app)
 {
-    io.on('connection', function (socket) {
-        console.log("Received connection");
+	// const server = require('http').createServer(app);
+	// const sio = require("socket.io")(server, {
+	//   handlePreflightRequest: (req, res) => {
+	// 	  const headers = {
+	// 		  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+	// 		  "Access-Control-Allow-Origin": req.headers.origin, //or the specific origin you want to give access to,
+	// 		  "Access-Control-Allow-Credentials": true
+	// 	  };
+	// 	  res.writeHead(200, headers);
+	// 	  res.end();
+	//   }
+	// });
+	const io = require('socket.io')(3000);
+	io.set('transports', ['websocket']);
+	io.on('connection', function (socket) {
+        console.log(`Received connection id ${socket.id} connected ${socket.connected}`);
 
-        ///////////////
-        //// Broadcast heartbeat over websockets ever 5 seconds
-        //////////////
-        var heartbeatTimer = setInterval( function () 
-        {
-            console.log("interval", servers)
-            socket.emit("heartbeat", servers);
-        }, 5000);
+		if( socket.connected )
+		{
+			///////////////
+			//// Broadcast heartbeat over websockets ever 5 seconds
+			//////////////
+			var heartbeatTimer = setInterval( function () 
+			{
+				console.log("interval", servers)
+				socket.emit("heartbeat", servers);
+			}, 5000);
 
-        socket.on('disconnect', function () {
-            console.log("closing connection")
-            clearInterval(heartbeatTimer);
-        });
-    });
+			socket.on('error', function(err)
+			{
+				console.log(err);
+				clearInterval(heartbeatTimer);
+			});
+
+			socket.on('disconnect', function (reason) {
+				console.log(`closing connection ${reason}`);
+				clearInterval(heartbeatTimer);
+			});
+		}
+	});
+
 }
 
 function memoryLoad()
@@ -84,13 +106,13 @@ function measureLatenancy(server)
 	{
 		url: server.url
 	};
-	console.log("request to url");
-	request(options, function (error, res, body) 
-	{
-		console.log( error || res.statusCode, server.url);
-		server.latency = 500;
-	});
-	return server.latency;
+//	console.log("request to url");
+	// request(options, function (error, res, body) 
+	// {
+	// 	console.log( error || res.statusCode, server.url);
+	 	server.latency = 500;
+	// });
+	 return server.latency;
 }
 
 function calculateColor()
