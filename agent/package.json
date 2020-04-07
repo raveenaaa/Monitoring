@@ -1,0 +1,15 @@
+{
+  "name": "agent",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "push": "node install.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "systeminformation": "^4.23.1"
+  }
+}
