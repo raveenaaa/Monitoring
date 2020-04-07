@@ -32,26 +32,25 @@ exports.handler = async argv => {
 
 async function run(privateKey) {
 
-    console.log(chalk.greenBright('Standing up infrastructure!'));
-
-    console.log(chalk.blueBright('Provisioning monitoring server...'));
-    let result = child.spawnSync(`bakerx`, `run monitor queues --ip 192.168.44.92 --sync`.split(' '), {shell:true, stdio: 'inherit'} );
+    console.log(chalk.greenBright('Provisioning monitoring server...'));
+    let result = child.spawnSync(`bakerx`, `run monitor queues --ip 192.168.44.92 --sync`.split(' '), 
+        {shell:true, stdio: 'inherit', cwd: path.join(__dirname, "../../dashboard")} );
     if( result.error ) { console.log(result.error); process.exit( result.status ); }
 
-    console.log(chalk.blueBright('Provisioning alpine-01...'));
+    console.log(chalk.greenBright('Provisioning alpine-01...'));
     result = child.spawnSync(`bakerx`, `run alpine-01 alpine-node`.split(' '), {shell:true, stdio: 'inherit'} );
     if( result.error ) { console.log(result.error); process.exit( result.status ); }
-    VBox.execute('controlvm', 'alpine-01 natpf1 "service,tcp,,9001,,3000"');
+    VBox.execute('controlvm', 'alpine-01 natpf1 "service,tcp,,9001,,3000"').catch( e => e );
 
-    console.log(chalk.blueBright('Provisioning alpine-01...'));
+    console.log(chalk.greenBright('Provisioning alpine-02...'));
     result = child.spawnSync(`bakerx`, `run alpine-02 alpine-node`.split(' '), {shell:true, stdio: 'inherit'} );
     if( result.error ) { console.log(result.error); process.exit( result.status ); }
-    VBox.execute('controlvm', 'alpine-02 natpf1 "service,tcp,,9002,,3000"');
+    VBox.execute('controlvm', 'alpine-02 natpf1 "service,tcp,,9002,,3000"').catch( e => e );
 
-    console.log(chalk.blueBright('Provisioning alpine-03...'));
+    console.log(chalk.greenBright('Provisioning alpine-03...'));
     result = child.spawnSync(`bakerx`, `run alpine-03 alpine-node`.split(' '), {shell:true, stdio: 'inherit'} );
     if( result.error ) { console.log(result.error); process.exit( result.status ); }
-    VBox.execute('controlvm', 'alpine-03 natpf1 "service,tcp,,9003,,3000"');
+    VBox.execute('controlvm', 'alpine-03 natpf1 "service,tcp,,9003,,3000"').catch( e => e );
 
     // console.log(chalk.blueBright('Running init script...'));
     // result = sshSync('/bakerx/cm/server-init.sh', 'vagrant@192.168.33.10');
