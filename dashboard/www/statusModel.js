@@ -1,21 +1,12 @@
 $(document).ready( function()
 {
-    $('#statusTable').DataTable( { "paging":   false, "info":     false });
+    $('#statusTable').DataTable( { "paging":false, "info":false, 
+    "columnDefs" : [
+        {"className": "dt-center", "targets": "_all"}
+    ],
+    });
 
-    var clients = [
-        { 
-            name: "us-east-alpine-001", cpu: "1.00%", memoryLoad: "0%",
-            status: "#ab3fdd", recentData : [0, 9, 1, 10, 10, 10, 1, 1, 0, 0, 9, 8, 7, 8, 9]
-        },
-        { 
-            name: "us-east-alpine-002", cpu: "1.00%", memoryLoad: "0%",
-            status: "#ab3fdd", recentData : [0, 9, 1, 10, 10, 10, 1, 1, 0, 0, 9, 8, 7, 8, 9]
-        },
-        { 
-            name: "us-east-alpine-003", cpu: "1.00%", memoryLoad: "0%",
-            status: "#ab3fdd", recentData : [0, 9, 1, 10, 10, 10, 1, 1, 0, 0, 9, 8, 7, 8, 9]
-        }
-    ];
+    var clients = [];
 
     let statusBars = new Vue({
         el: "#statusColors",

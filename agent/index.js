@@ -12,10 +12,12 @@ class Agent
     }
     async cpu()
     {
-        return await si.currentLoad();
+        let load = await si.currentLoad();
+        return load.currentload.toFixed(2);
     }
-    disk()
+    async disk()
     {
+        return 0;
     }
 }
 
@@ -47,7 +49,8 @@ async function main(name)
     {
         let payload = {
             memoryLoad: agent.memoryLoad(),
-            cpu: await agent.cpu()
+            cpu: await agent.cpu(),
+            disk: await agent.disk()
         };
         let msg = JSON.stringify(payload);
         await client.publish(name, msg);
