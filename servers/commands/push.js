@@ -3,6 +3,7 @@ const child = require('child_process');
 const chalk = require('chalk');
 const path = require('path');
 
+const sshSync = require('../lib/ssh');
 const scpSync = require('../lib/scp');
 const VBox = require('../lib/VBoxManage');
 
@@ -46,14 +47,17 @@ async function run() {
         result = scpSync (port, package, 'root@localhost:/root/package.json');
         if( result.error ) { console.log(result.error); process.exit( result.status ); }
 
+        if( process.platform=='win32')
+            result = sshSync(`"npm install && forever stopall && forever start agent.js ${server}"`, 'root@localhost', port);
+        else
+        {
+            result = sshSync(`'npm install && forever stopall && forever start agent.js ${server}'`, 'root@localhost', port);
+        }
+        if( result.error ) { console.log(result.error); process.exit( result.status ); }
     }
 
 
 
-    // let identifyFile = privateKey || path.join(os.homedir(), '.bakerx', 'insecure_private_key');
-    
-    // result = sshSync('/bakerx/cm/server-init.sh', 'vagrant@192.168.33.10');
-    // if( result.error ) { console.log(result.error); process.exit( result.status ); }
 
 }
 
