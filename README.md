@@ -16,11 +16,111 @@ Fidelity vs. latency.
 
 ### Before you start
 
-Clone this repository, run `npm install`.
+Clone this repository.
 
-Run `npm start` to run the server. This command uses `nodemon` to automatically restart the server for you, everytime the code is changed.
+Pull the following bakerx images.
 
-Run a local webserver in the www directory and open the monitoring application. You may use `npx http-server`, but there are many other options.
+```bash
+# Updated to allow redis access from remote hosts
+bakerx pull CSC-DevOps/Images#Spring2020 queues
+bakerx pull CSC-DevOps/Images#Spring2020 alpine-node
+```
+
+Bring up the infrastructure.
+
+```bash
+cd Monitoring/servers
+npm install
+node index up
+```
+
+Inspect the console output for any errors, then confirm VMs have started in VirtualBox.
+
+![vbox](img/vbox.png)
+
+Open a terminal dedicated to the monitor instance and ssh into machine, `bakerx ssh monitor`.
+Change into dashboard directory (which will be mounted at `/bakerx`), install packages, and start dashboard service.
+
+```bash
+cd /bakerx
+npm install
+node bin/www
+```
+
+Visit the monitoring dashboard at http://192.168.44.92:8080/. Confirm you can see the dashboard running.
+
+## Monitoring framework
+
+Explain how metrics flow here?
+
+## Agent
+
+You will need to complete building the monitoring agent, and then install it the servers being monitored.
+
+### Task 1: Add memory/cpu metrics.
+
+Update code.
+
+Modify `function memoryLoad()` to calculate the amount of memory currently used by the system.
+Modify `function cpuAverage()` to calculate the amount of load the cpu is under, between two successive samples.
+
+
+Test out by registering your computer as client.
+
+```
+cd agent/
+node index.js computer
+```
+
+Install on servers.
+
+```bash
+cd servers/
+node index.js push
+```
+
+You should see memory/cpu information being displayed in dashboard.
+
+### Task 2: Latency and HTTP status codes.
+
+You have three servers running, on 9001, 9002, and 9003.
+
+
+### Task 3: Calculate and display server health.
+
+Start up apps.
+
+### Task 4: Load services.
+
+/work
+/stackless
+
+Can we kill with siege?
+
+Siege is a tool for performing load testing of a site.
+
+Download: https://www.joedog.org/siege-home/
+Mac: `brew install siege` or `./configure; make; make install`
+Windows: https://github.com/ewwink/siege-windows
+
+If you run this command, you should see latency start to become red for middle service.
+```
+siege -b -t60s http://localhost:9001
+```
+
+
+### Task 5: New metric.
+
+Add a new metric from agent to dashboard.
+
+## Extra
+
+### socket.io
+
+A new technology that you have not been previously exposed to is [socket.io](http://socket.io/).
+
+
+### setInterval
 
 There is code running every 2 seconds that will broad cast basic stats to the web app:
 
@@ -38,39 +138,6 @@ There is code running every 2 seconds that will broad cast basic stats to the we
 	}, 2000);
 ```
 
-### socket.io
-
-A new technology that you have not been previously exposed to is [socket.io](http://socket.io/).
-
-
-### Calculate Memory Load
-
-Modify `function memoryLoad()` to calculate the amount of memory currently used by the system.
-
-### Calculate CPU Load
-
-Modify `function cpuAverage()` to calculate the amount of load the cpu is under, between two successive samples.
-
-### Calculate Latency
-
-You have three servers running, on 9000, 9001, and 9002.
-
-Modify `function measureLatenancy()` to calculate the time between making a request, and receiving a response.
-
-[Useful example, using websockets (you can use regular http request)](http://stackoverflow.com/questions/4071258/how-can-i-find-the-response-time-latency-of-a-client-in-nodejs-with-sockets-s)
-
-## Traffic
-
-Siege is a tool for performing load testing of a site.
-
-Download: https://www.joedog.org/siege-home/
-Mac: `brew install siege` or `./configure; make; make install`
-Windows: https://github.com/ewwink/siege-windows
-
-If you run this command, you should see latency start to become red for middle service.
-```
-siege -b -t60s http://localhost:9001
-```
 
 ## Monkeys
 
