@@ -3,6 +3,7 @@ const util  = require('util');
 const os = require('os');
 const si = require('systeminformation');
 
+// Calculate metrics.
 class Agent
 {
     memoryLoad()
@@ -19,12 +20,11 @@ class Agent
 
 (async () => 
 {
+    // Get agent name from command line.
     let args = process.argv.slice(2);
     main(args[0]);
 
 })();
-
-
 
 
 async function main(name)
@@ -51,8 +51,6 @@ async function main(name)
         await client.publish(name, msg);
         console.log(`${name} ${msg}`);
     }, 1000);
-
-    // connection.quit();
 
 }
 
