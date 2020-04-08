@@ -55,7 +55,9 @@ function start(app)
 		{
 			if( server.name == channel)
 			{
-				server.memoryLoad = JSON.parse(message).memoryLoad;
+				let payload = JSON.parse(message);
+				server.memoryLoad = payload.memoryLoad;
+				server.cpu = (payload.cpu.currentload).toFixed(2);
 			}
 		}
 	});

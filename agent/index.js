@@ -1,6 +1,7 @@
 const redis = require('redis');
 const util  = require('util');
 const os = require('os');
+const si = require('systeminformation');
 
 class Agent
 {
@@ -8,6 +9,13 @@ class Agent
     {
  	// console.log( os.totalmem(), os.freemem() );
        return ((os.totalmem()-os.freemem())/os.totalmem()*100.0).toFixed(2);
+    }
+    async cpu()
+    {
+        return await si.currentLoad();
+    }
+    disk()
+    {
     }
 }
 
@@ -38,7 +46,8 @@ async function main(name)
     setInterval(async function()
     {
         let payload = {
-            memoryLoad: agent.memoryLoad()
+            memoryLoad: agent.memoryLoad(),
+            cpu: await agent.cpu()
         };
         let msg = JSON.stringify(payload);
         await client.publish(name, msg);
