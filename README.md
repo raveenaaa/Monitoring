@@ -10,7 +10,9 @@ Publish-subscribe vs. warehouse.  You get events, fire-n-forget vs. analyze stor
 
 Fidelity vs. latency.
 
+### Monitoring Architecture
 
+![arch](img/monitor-arch.png)
 
 ## Workshop
 
