@@ -50,12 +50,6 @@ $(document).ready( function()
     socket.on("heartbeat", function(heartbeat) 
     {
         console.log(JSON.stringify(heartbeat));
-        //viewModel.updateClient(heartbeat);
-        for( var client of heartbeat)
-        {
-            client.recentData = [0, 9, 1, 10, 10, 10, 1, 1, 0, 0, 9, 8, 7, 8, 9]
-        }
-        
         table.clients = heartbeat;
         statusBars.clients = heartbeat;
 
