@@ -48,7 +48,8 @@
                   <th>Name</th>
                   <th>CPU %</th>
                   <th>Memory %</th>
-                  <th>Disk</th>
+                  <th>Latency (ms)</th>
+                  <th>HTTP</th>
                   <th>Trend</th>
               </tr>
           </thead>
@@ -57,14 +58,15 @@
                 <td>{{client.name}}</td>
                 <td>{{client.cpu}}</td>
                 <td>{{client.memoryLoad}}</td>
-                <td>{{client.disk}}</td>
+                <td>{{client.latency}}</td>
+                <td>{{client.statusCode}}</td>
                 <td>
                   <div>
                     <trend
-                      :data="client.recentData"
-                      :gradient="['#6fa8dc', '#42b983', '#2c3e50']"
-                      auto-draw
-                      smooth>
+                      :key="client.name"
+                      :data="client.scoreTrend"
+                      :stroke-width="4"
+                      :gradient="['#ff0000', '#00ff00']">
                     </trend>
                   </div>
                 </td>
