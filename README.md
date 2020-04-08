@@ -1,14 +1,20 @@
 # Monitoring
 
-![build](https://travis-ci.org/CSC-DevOps/Monitoring.svg?branch=master)
+In this workshop, we'll cover the basic principles related to establishing a monitoring infrastructure.  
 
-The goal of this workshop is to establish some basic principles related to establishing a monitoring infrastructure.  Based on this we can begin exploring some simple resilience testing.
+![image](img/monitor-workshop.png)
 
-A new technology that you have not been previously exposed to is [socket.io](http://socket.io/).
+### Concepts
 
-![image](https://cloud.githubusercontent.com/assets/742934/11117882/77a18fcc-890b-11e5-831a-87c4363d77e6.png)
+Publish-subscribe vs. warehouse.  You get events, fire-n-forget vs. analyze stored high-fidelity metrics.
 
-### Setup
+Fidelity vs. latency.
+
+
+
+## Workshop
+
+### Before you start
 
 Clone this repository, run `npm install`.
 
@@ -31,6 +37,11 @@ There is code running every 2 seconds that will broad cast basic stats to the we
 	
 	}, 2000);
 ```
+
+### socket.io
+
+A new technology that you have not been previously exposed to is [socket.io](http://socket.io/).
+
 
 ### Calculate Memory Load
 
