@@ -3,6 +3,7 @@ const child = require('child_process');
 const chalk = require('chalk');
 const path = require('path');
 const os = require('os');
+const fs = require('fs');
 
 const scpSync = require('../lib/scp');
 const VBox = require('../lib/VBoxManage');
@@ -37,6 +38,11 @@ async function run(privateKey) {
         {shell:true, stdio: 'inherit', cwd: path.join(__dirname, "../../dashboard")} );
     if( result.error ) { console.log(result.error); process.exit( result.status ); }
 
+    let ip = getIPAddress();
+    console.log(chalk.greenBright(`Setting host network as ${ip}...`));
+    fs.writeFileSync(path.join(__dirname, "../../dashboard/metrics/ip.txt"), ip);
+
+
     console.log(chalk.greenBright('Provisioning alpine-01...'));
     result = child.spawnSync(`bakerx`, `run alpine-01 alpine-node`.split(' '), {shell:true, stdio: 'inherit'} );
     if( result.error ) { console.log(result.error); process.exit( result.status ); }
@@ -58,4 +64,18 @@ async function run(privateKey) {
 
 }
 
+function getIPAddress() {
+    var interfaces = require('os').networkInterfaces();
+    for (var devName in interfaces) {
+      var iface = interfaces[devName];
+  
+      for (var i = 0; i < iface.length; i++) {
+        var alias = iface[i];
+        if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal)
+          return alias.address;
+      }
+    }
+  
+    return '0.0.0.0';
+  }
 
