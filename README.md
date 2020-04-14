@@ -4,56 +4,9 @@ In this workshop, we'll cover the basic principles related to establishing a mon
 
 ![image](img/monitor-workshop.png)
 
-### Concepts
-
-Agent vs health endpoint.
-
-Publish-subscribe vs. warehouse.  You get events, fire-n-forget vs. analyze stored high-fidelity metrics.
-
-Fidelity vs. latency.
-
 ### Monitoring Architecture
 
 ![arch](img/monitor-arch.png)
-
-## Workshop
-
-### Before you start
-
-Clone this repository.
-
-Pull the following bakerx images.
-
-```bash
-# Updated to allow redis access from remote hosts
-bakerx pull CSC-DevOps/Images#Spring2020 queues
-bakerx pull CSC-DevOps/Images#Spring2020 alpine-node
-```
-
-Bring up the infrastructure.
-
-```bash
-cd Monitoring/servers
-npm install
-node index up
-```
-
-Inspect the console output for any errors, then confirm VMs have started in VirtualBox.
-
-![vbox](img/vbox.png)
-
-Open a terminal dedicated to the monitor instance and ssh into machine, `bakerx ssh monitor`.
-Change into dashboard directory (which will be mounted at `/bakerx`), install packages, and start dashboard service.
-
-```bash
-cd /bakerx
-npm install
-node bin/www
-```
-
-Visit the monitoring dashboard at http://192.168.44.92:8080/. Confirm you can see the dashboard running.
-
-## Monitoring infrastructure
 
 ##### Dashboard
 
@@ -108,6 +61,45 @@ class Agent
 ```
 
 The package, [`systeminformation`](https://www.npmjs.com/package/systeminformation), has an extensive collection of utils for obtaining and measuring system metrics.
+
+## Workshop
+
+### Before you start
+
+Clone this repository.
+
+Pull the following bakerx images.
+
+```bash
+# Updated to allow redis access from remote hosts
+bakerx pull CSC-DevOps/Images#Spring2020 queues
+bakerx pull CSC-DevOps/Images#Spring2020 alpine-node
+```
+
+Bring up the infrastructure.
+
+```bash
+cd Monitoring/servers
+npm install
+node index up
+```
+
+Inspect the console output for any errors, then confirm VMs have started in VirtualBox.
+
+![vbox](img/vbox.png)
+
+Open a terminal dedicated to the monitor instance and ssh into machine, `bakerx ssh monitor`.
+Change into dashboard directory (which will be mounted at `/bakerx`), install packages, and start dashboard service.
+
+```bash
+cd /bakerx
+npm install
+node bin/www
+```
+
+Visit the monitoring dashboard at http://192.168.44.92:8080/. Confirm you can see the dashboard running.
+
+## Monitoring infrastructure
 
 ### Task 1: Add memory/cpu metrics.
 
