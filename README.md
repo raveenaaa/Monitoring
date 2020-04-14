@@ -128,7 +128,7 @@ Visit the monitoring dashboard at http://192.168.44.92:8080/. Confirm you can se
 ### Task 1: Add memory/cpu metrics.
 
 Modify `function memoryLoad()` to calculate the amount of memory currently used by the system as a percentage.
-Modify `function cpuAverage()` to calculate the amount of load the cpu is under (see [`systeminformation.currentLoad`](https://www.npmjs.com/package/systeminformation#8-current-load-processes--services)).
+Modify `function cpuAverage()` to calculate the amount of load the cpu is under as a percentage (see [`systeminformation.currentLoad`](https://www.npmjs.com/package/systeminformation#8-current-load-processes--services)).
 
 
 Once you've completed your code updates, you can test it out by registering your computer as client. Simply run the agent as follows:
