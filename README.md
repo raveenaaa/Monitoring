@@ -8,15 +8,17 @@ In this workshop, we'll cover the basic principles related to establishing a mon
 
 ![arch](img/monitor-arch.png)
 
+The monitoring infrastructure has several components.
+
 ##### Dashboard
 
 The dashboard visualization is located in `dashboard/www/`. The webpage uses vue.js to implement databinding between the server metrics and the html components (i.e. Model-View-ViewModel).
 
-##### Events with socket.io
+##### Events with socket.io (monitor service => dashboard)
 
 Another technology that you have not been previously exposed to is [socket.io](http://socket.io/). The code in `dashboard/metrics/index.js` creates a websocket that publishes events for the dashboard to consume and display.
 
-##### Publish-subscribe with redis
+##### Publish-subscribe with redis (agents => monitor service)
 
 The agent and dashboard communicate through a [publish-subscribe message paradigm](https://redis.io/topics/pubsub) provided by the redis `PUBLISH` and `SUBSCRIBE` commands. The redis server is hosted on the monitor server.
 
