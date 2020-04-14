@@ -22,7 +22,8 @@ Another technology that you have not been previously exposed to is [socket.io](h
 
 The agent and dashboard communicate through a [publish-subscribe message paradigm](https://redis.io/topics/pubsub) provided by the redis `PUBLISH` and `SUBSCRIBE` commands. The redis server is hosted on the monitor server.
 
-Here you can see the monitoring agent publishing metrics to a channel (corresponding to the server name), every 1 second.
+Here, you can see the monitoring agent *publishing* metrics to a channel (corresponding to the server name), every 1 second (`agent/index.js`).
+
 ```js
     // Push update ever 1 second
     setInterval(async function()
@@ -35,6 +36,27 @@ Here you can see the monitoring agent publishing metrics to a channel (correspon
         await client.publish(name, msg);
         console.log(`${name} ${msg}`);
     }, 1000);
+```
+
+Likewise, you can see the monitoring service *subscribing* to updates from a channel (`dashboard/metrics/index.js`).
+
+```js
+// When an agent has published information to a channel, we will receive notification here.
+	client.on("message", function (channel, message) 
+	{
+		console.log(`Received message from agent: ${channel}`)
+		for( var server of servers )
+		{
+			// Update our current snapshot for a server's metrics.
+			if( server.name == channel)
+			{
+				let payload = JSON.parse(message);
+				server.memoryLoad = payload.memoryLoad;
+				server.cpu = payload.cpu;
+				updateHealth(server);
+			}
+		}
+	});
 ```
 
 ##### Servers being monitored
