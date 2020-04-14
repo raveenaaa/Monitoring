@@ -175,13 +175,13 @@ You want to make an overall assessment of a server's health. We will be using ou
 Update the code inside `dashboard/metrics/index.js#updateHealth(server)` to 
 create a metric that calculates an overall score from memoryLoad, cpu, latency, and statusCode.
 
-You should see the dashboard reflect the health of your servers in the server status field, as well as sparkline update to indicate the changes in trend.
+You should see the dashboard reflect the health of your servers in the server status field, as well as sparkline update to indicate the changes in score's trend per server.
 
 ### Task 4: Load services.
 
-From your host computer, you should be able to visit `http://localhost:9001/work` in your browser, or make a curl request `curl http://localhost:9001` and see corresponding changes in your dashboard.
+From your host computer, you should be able to visit `http://localhost:9001/work` in your browser, or make a curl request `curl http://localhost:9001/work` and see corresponding changes in the metrics from your dashboard.
 
-Notice the impact of the workload based on different endpoints:
+Notice the impact of the workload based on hitting different endpoints:
 
 * http://localhost:9001/
 * http://localhost:9001/stackless
@@ -211,6 +211,8 @@ Failed transactions:               0
 Longest transaction:            0.53
 Shortest transaction:           0.00
 ```
+
+##### Installing siege
 
 Mac: `brew install siege`  
 Linux: `apt-get install siege`  
