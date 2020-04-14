@@ -52,8 +52,5 @@ $(document).ready( function()
         console.log(JSON.stringify(heartbeat));
         table.clients = heartbeat;
         statusBars.clients = heartbeat;
-
-        // table.forceRerender();
-        // statusBars.forceRerender();
     });
 }); 

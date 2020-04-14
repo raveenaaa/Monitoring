@@ -6,6 +6,8 @@ In this workshop, we'll cover the basic principles related to establishing a mon
 
 ### Concepts
 
+Agent vs health endpoint.
+
 Publish-subscribe vs. warehouse.  You get events, fire-n-forget vs. analyze stored high-fidelity metrics.
 
 Fidelity vs. latency.
@@ -51,106 +53,160 @@ node bin/www
 
 Visit the monitoring dashboard at http://192.168.44.92:8080/. Confirm you can see the dashboard running.
 
-## Monitoring framework
+## Monitoring infrastructure
 
-Explain how metrics flow here?
+##### Dashboard
 
-## Agent
+The dashboard visualization is located in `dashboard/www/`. The webpage uses vue.js to implement databinding between the server metrics and the html components (i.e. Model-View-ViewModel).
 
-You will need to complete building the monitoring agent, and then install it the servers being monitored.
+##### Events with socket.io
+
+Another technology that you have not been previously exposed to is [socket.io](http://socket.io/). The code in `dashboard/metrics/index.js` creates a websocket that publishes events for the dashboard to consume and display.
+
+##### Publish-subscribe with redis
+
+The agent and dashboard communicate through a [publish-subscribe message paradigm](https://redis.io/topics/pubsub) provided by the redis `PUBLISH` and `SUBSCRIBE` commands. The redis server is hosted on the monitor server.
+
+Here you can see the monitoring agent publishing metrics to a channel (corresponding to the server name), every 1 second.
+```js
+    // Push update ever 1 second
+    setInterval(async function()
+    {
+        let payload = {
+            memoryLoad: agent.memoryLoad(),
+            cpu: await agent.cpu()
+        };
+        let msg = JSON.stringify(payload);
+        await client.publish(name, msg);
+        console.log(`${name} ${msg}`);
+    }, 1000);
+```
+
+##### Servers being monitored
+
+You have three servers running, which are accessible through a port forward on your localhost (ports 9001, 9002, and 9003). Furthermore, each server provides the following services accessible under these endpoints: `/`, `/work`, and `/stackless`---each endpoint provides different levels of workload for the server, with `/work` being the most computationally expensive.
+
+##### Monitoring agent
+
+The monitoring agent is in `agent/index.js`.
+
+You will need to complete the code for the monitoring agent, and then install it the servers being monitored.
+
+```js
+// TASK 1: Calculate metrics.
+class Agent
+{
+    memoryLoad()
+    {
+       return 0;
+    }
+    async cpu()
+    {
+       return 0;
+    }
+}
+```
+
+The package, [`systeminformation`](https://www.npmjs.com/package/systeminformation), has an extensive collection of utils for obtaining and measuring system metrics.
 
 ### Task 1: Add memory/cpu metrics.
 
-Update code.
-
-Modify `function memoryLoad()` to calculate the amount of memory currently used by the system.
-Modify `function cpuAverage()` to calculate the amount of load the cpu is under, between two successive samples.
+Modify `function memoryLoad()` to calculate the amount of memory currently used by the system as a percentage.
+Modify `function cpuAverage()` to calculate the amount of load the cpu is under (see [`systeminformation.currentLoad`](https://www.npmjs.com/package/systeminformation#8-current-load-processes--services)).
 
 
-Test out by registering your computer as client.
+Once you've completed your code updates, you can test it out by registering your computer as client. Simply run the agent as follows:
 
 ```
 cd agent/
 node index.js computer
 ```
 
-Install on servers.
+You should be able to verify your metrics being displayed in the dashboard. Recall, you should have `node bin/www` running inside the monitor VM.
+
+##### Install agent on servers.
+
+You can deploy this agent to run on your servers by using the `push` command provided in the driver:
 
 ```bash
 cd servers/
 node index.js push
 ```
 
-You should see memory/cpu information being displayed in dashboard.
+You should see memory/cpu information being displayed in the dashboard for all the servers, including your computer.
 
 ### Task 2: Latency and HTTP status codes.
 
-You have three servers running, on 9001, 9002, and 9003.
+Collecting metrics related to availability and efficiency of services often requires an external third-party. Here, the monitor service will be extended to collected data related to latency and service status.
 
+Extend the code inside `dashboard/metrics/index.js` to collect the latency and status code of the http response (`res.statusCode`).
+
+```js
+	// LATENCY CHECK
+	var latency = setInterval( function () 
+	{
+		...
+				got(server.url, {timeout: 5000, throwHttpErrors: false}).then(function(res)
+		...
+```
+
+Restart the monitoring service, you should see the dashboard display latency information.
 
 ### Task 3: Calculate and display server health.
 
-Start up apps.
+You want to make an overall assessment of a server's health. We will be using our four metrics to calculate an overall health score (4 being good healthy and 0 being unhealthy).
+
+Update the code inside `dashboard/metrics/index.js#updateHealth(server)` to 
+create a metric that calculates an overall score from memoryLoad, cpu, latency, and statusCode.
+
+You should see the dashboard reflect the health of your servers in the server status field, as well as sparkline update to indicate the changes in trend.
 
 ### Task 4: Load services.
 
-/work
-/stackless
+From your host computer, you should be able to visit `http://localhost:9001/work` in your browser, or make a curl request `curl http://localhost:9001` and see corresponding changes in your dashboard.
 
-Can we kill with siege?
+Notice the impact of the workload based on different endpoints:
+
+* http://localhost:9001/
+* http://localhost:9001/stackless
+* http://localhost:9001/work
+
+
+##### Can we create a even bigger load?
 
 Siege is a tool for performing load testing of a site.
 
-Download: https://www.joedog.org/siege-home/
-Mac: `brew install siege` or `./configure; make; make install`
-Windows: https://github.com/ewwink/siege-windows
-
-If you run this command, you should see latency start to become red for middle service.
 ```
-siege -b -t60s http://localhost:9001
+vagrant@ubuntu-bionic:/bakerx/metrics$ siege -b -t30s http://172.30.164.193:9001/
+** SIEGE 4.0.4
+** Preparing 25 concurrent users for battle.
+The server is now under siege...
+Lifting the server siege...
+Transactions:                  34088 hits
+Availability:                 100.00 %
+Elapsed time:                  29.10 secs
+Data transferred:               0.39 MB
+Response time:                  0.02 secs
+Transaction rate:            1171.41 trans/sec
+Throughput:                     0.01 MB/sec
+Concurrency:                   24.63
+Successful transactions:       34088
+Failed transactions:               0
+Longest transaction:            0.53
+Shortest transaction:           0.00
 ```
 
+Mac: `brew install siege`  
+Linux: `apt-get install siege`  
+Windows: Install inside the monitor server (`bakerx ssh monitor`). Note: You should use the ip of your host computer (see dashboard/metrics/ip.txt) instead of localhost to create the desired effect.
+
+Experiment with loading the server by hitting different endpoints. Can you cause the service to timeout?
+```
+siege -b -t30s http://localhost:9001/
+siege -b -t30s http://localhost:9001/stackless
+siege -b -t30s http://localhost:9001/work
+```
 
 ### Task 5: New metric.
 
-Add a new metric from agent to dashboard.
-
-## Extra
-
-### socket.io
-
-A new technology that you have not been previously exposed to is [socket.io](http://socket.io/).
-
-
-### setInterval
-
-There is code running every 2 seconds that will broad cast basic stats to the web app:
-
-``` js
-	setInterval( function () 
-	{
-		io.sockets.emit('heartbeat', 
-		{ 
-			name: "Your Computer", 
-			cpu: cpuAverage(), 
-			memoryLoad: memoryLoad(),
-			nodes: calculateColor()
-		});
-	
-	}, 2000);
-```
-
-
-## Monkeys
-
-### Latency Monkey
-
-**Latency Monkey** induces artificial delays client-server communication layer to simulate service degradation and measures if upstream services respond appropriately. In addition, by making very large delays, you can simulate a node or even an entire service downtime (and test our ability to survive it) without physically bringing these instances down. This can be particularly useful when testing the fault-tolerance of a new service by simulating the failure of its dependencies, without making these dependencies unavailable to the rest of the system.
-
-*Implement a basic Latency Monkey by introducing randomly large delays using a proxy to the three servers.*
-
-### Chaos Monkey
-
-**Chaos Monkey**, a tool that randomly disables our production instances to make sure we can survive this common type of failure without any customer impact. The name comes from the idea of unleashing a wild monkey with a weapon in your data center (or cloud region) to randomly shoot down instances and chew through cables -- all the while we continue serving our customers without interruption.
-
-*Implement a basic Chaos Monkey by blocking routes to a specific server.*
+Add a new metric in the agent and display it in the dashboard. This should help you better understand the flow of the monitoring collection, broadcast mechanics, and display of metrics.

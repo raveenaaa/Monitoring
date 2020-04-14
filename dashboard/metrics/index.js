@@ -97,8 +97,9 @@ function start(app)
 				// Make request to server we are monitoring.
 				got(server.url, {timeout: 5000, throwHttpErrors: false}).then(function(res)
 				{
-					captureServer.statusCode = res.statusCode;
-					captureServer.latency = Date.now() - now;
+					// TASK 2
+					// captureServer.statusCode = ???;
+					// captureServer.latency = ???;
 				}).catch( e => 
 				{
 					// console.log(e);
@@ -110,18 +111,16 @@ function start(app)
 	}, 10000);
 }
 
+// TASK 3
 function updateHealth(server)
 {
 	let score = 0;
-	score += server.memoryLoad < 25.00 ? 1: 0;
-	score += server.cpu < 25.00 ? 1: 0;
-	score += server.latency < 100 ? 1: 0;
-	score += server.statusCode === 200 ? 1: 0
+	// Update score calculation.
 
 	server.status = score2color(score/4);
 
-
 	console.log(`${server.name} ${score}`);
+
 	// Add score to trend data.
 	server.scoreTrend.push( (4-score));
 	if( server.scoreTrend.length > 100 )

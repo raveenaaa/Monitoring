@@ -4,17 +4,18 @@ const os = require('os');
 const si = require('systeminformation');
 
 // Calculate metrics.
+// TASK 1:
 class Agent
 {
     memoryLoad()
     {
- 	// console.log( os.totalmem(), os.freemem() );
-       return ((os.totalmem()-os.freemem())/os.totalmem()*100.0).toFixed(2);
+       // console.log( os.totalmem(), os.freemem() );
+       return 0;
     }
     async cpu()
     {
-        let load = await si.currentLoad();
-        return load.currentload.toFixed(2);
+       let load = await si.currentLoad();
+       return 0;
     }
 }
 
