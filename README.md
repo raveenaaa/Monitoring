@@ -153,7 +153,7 @@ You should see memory/cpu information being displayed in the dashboard for all t
 
 ### Task 2: Latency and HTTP status codes.
 
-Collecting metrics related to availability and efficiency of services often requires an external third-party. Here, the monitor service will be extended to collected data related to latency and service status.
+Collecting metrics related to availability and efficiency of services often requires an external third-party. Here, the monitor service will be extended to collect data related to latency and service status.
 
 Extend the code inside `dashboard/metrics/index.js` to collect the latency and status code of the http response (`res.statusCode`).
 
