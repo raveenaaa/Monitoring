@@ -67,7 +67,7 @@ You have three servers running, which are accessible through a port forward on y
 
 The monitoring agent is in `agent/index.js`.
 
-You will need to complete the code for the monitoring agent, and then install it the servers being monitored.
+You will need to complete the code for the monitoring agent, and then install it on the servers being monitored.
 
 ```js
 // TASK 1: Calculate metrics.
