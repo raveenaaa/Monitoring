@@ -1,96 +1,13 @@
-# Monitoring
+# HW 4: Monitoring
 
-In this workshop, we'll cover the basic principles related to establishing a monitoring infrastructure.  
+In this homework we have constructed a basic monitoring infrastructure and recorded some metrics.
 
-![image](img/monitor-workshop.png)
+## Setup
 
-### Monitoring Architecture
-
-![arch](img/monitor-arch.png)
-
-The monitoring infrastructure has several components.
-
-##### Dashboard
-
-The dashboard visualization is located in `dashboard/www/`. The webpage uses vue.js to implement databinding between the server metrics and the html components (i.e. Model-View-ViewModel).
-
-##### Events with socket.io (monitor service => dashboard)
-
-Another technology that you have not been previously exposed to is [socket.io](http://socket.io/). The code in `dashboard/metrics/index.js` creates a websocket that publishes events for the dashboard to consume and display.
-
-##### Publish-subscribe with redis (agents => monitor service)
-
-The agent and dashboard communicate through a [publish-subscribe message paradigm](https://redis.io/topics/pubsub) provided by the redis `PUBLISH` and `SUBSCRIBE` commands. The redis server is hosted on the monitor server.
-
-Here, you can see the monitoring agent *publishing* metrics to a channel (corresponding to the server name), every 1 second (`agent/index.js`).
-
-```js
-    // Push update ever 1 second
-    setInterval(async function()
-    {
-        let payload = {
-            memoryLoad: agent.memoryLoad(),
-            cpu: await agent.cpu()
-        };
-        let msg = JSON.stringify(payload);
-        await client.publish(name, msg);
-        console.log(`${name} ${msg}`);
-    }, 1000);
+Clone this repository:
 ```
-
-Likewise, you can see the monitoring service *subscribing* to updates from a channel (`dashboard/metrics/index.js`).
-
-```js
-// When an agent has published information to a channel, we will receive notification here.
-	client.on("message", function (channel, message) 
-	{
-		console.log(`Received message from agent: ${channel}`)
-		for( var server of servers )
-		{
-			// Update our current snapshot for a server's metrics.
-			if( server.name == channel)
-			{
-				let payload = JSON.parse(message);
-				server.memoryLoad = payload.memoryLoad;
-				server.cpu = payload.cpu;
-				updateHealth(server);
-			}
-		}
-	});
+git clone https://github.ncsu.edu/rmdcosta/HW4.git
 ```
-
-##### Servers being monitored
-
-You have three servers running, which are accessible through a port forward on your localhost (ports 9001, 9002, and 9003). Furthermore, each server provides the following services accessible under these endpoints: `/`, `/work`, and `/stackless`---each endpoint provides different levels of workload for the server, with `/work` being the most computationally expensive.
-
-##### Monitoring agent
-
-The monitoring agent is in `agent/index.js`.
-
-You will need to complete the code for the monitoring agent, and then install it on the servers being monitored.
-
-```js
-// TASK 1: Calculate metrics.
-class Agent
-{
-    memoryLoad()
-    {
-       return 0;
-    }
-    async cpu()
-    {
-       return 0;
-    }
-}
-```
-
-The package, [`systeminformation`](https://www.npmjs.com/package/systeminformation), has an extensive collection of utils for obtaining and measuring system metrics.
-
-## Workshop
-
-### Before you start
-
-Clone this repository.
 
 Pull the following bakerx images.
 
@@ -123,15 +40,15 @@ node bin/www
 
 Visit the monitoring dashboard at http://192.168.44.92:8080/. Confirm you can see the dashboard running.
 
-## Monitoring infrastructure
 
-### Task 1: Add memory/cpu metrics.
+## Task 1: Add memory/cpu metrics.
 
-Modify `function memoryLoad()` to calculate the amount of memory currently used by the system as a percentage.
-Modify `function cpuAverage()` to calculate the amount of load the cpu is under as a percentage (see [`systeminformation.currentLoad`](https://www.npmjs.com/package/systeminformation#8-current-load-processes--services)).
+We have modified the `function memoryLoad()` to calculate the amount of memory currently used by the system as a percentage. We have used the `os` package for this.
+
+Also we have modified `function cpuAverage()` to calculate the amount of load the cpu is under as a percentage using [`systeminformation.currentLoad`](https://www.npmjs.com/package/systeminformation#8-current-load-processes--services).
 
 
-Once you've completed your code updates, you can test it out by registering your computer as client. Simply run the agent as follows:
+Test it out by registering your computer as client. Simply run the agent as follows:
 
 ```
 cd agent/
@@ -140,7 +57,7 @@ node index.js computer
 
 You should be able to verify your metrics being displayed in the dashboard. Recall, you should have `node bin/www` running inside the monitor VM.
 
-##### Install agent on servers.
+#### Install agent on servers.
 
 You can deploy this agent to run on your servers by using the `push` command provided in the driver:
 
@@ -151,33 +68,23 @@ node index.js push
 
 You should see memory/cpu information being displayed in the dashboard for all the servers, including your computer.
 
-### Task 2: Latency and HTTP status codes.
+## Task 2: Latency and HTTP status codes.
 
-Collecting metrics related to availability and efficiency of services often requires an external third-party. Here, the monitor service will be extended to collect data related to latency and service status.
-
-Extend the code inside `dashboard/metrics/index.js` to collect the latency and status code of the http response (`res.statusCode`).
-
-```js
-	// LATENCY CHECK
-	var latency = setInterval( function () 
-	{
-		...
-				got(server.url, {timeout: 5000, throwHttpErrors: false}).then(function(res)
-		...
-```
+We have collected latency using the `Date` module. The HTTP status code can be taken from the server's response.
 
 Restart the monitoring service, you should see the dashboard display latency information.
 
-### Task 3: Calculate and display server health.
+## Task 3: Calculate and display server health.
 
-You want to make an overall assessment of a server's health. We will be using our four metrics to calculate an overall health score (4 being good healthy and 0 being unhealthy).
+We make an overall assessment of a server's health by using our four metrics to calculate an overall health score (4 being good healthy and 0 being unhealthy).
 
-Update the code inside `dashboard/metrics/index.js#updateHealth(server)` to 
-create a metric that calculates an overall score from memoryLoad, cpu, latency, and statusCode.
+The code is inside `dashboard/metrics/index.js#updateHealth(server)`.
+
+The weight of each metric is 1. They contribute equally to the final score.
 
 You should see the dashboard reflect the health of your servers in the server status field, as well as sparkline update to indicate the changes in score's trend per server.
 
-### Task 4: Load services.
+## Task 4: Load services.
 
 From your host computer, you should be able to visit `http://localhost:9001/work` in your browser, or make a curl request `curl http://localhost:9001/work` and see corresponding changes in the metrics from your dashboard.
 
@@ -188,12 +95,12 @@ Notice the impact of the workload based on hitting different endpoints:
 * http://localhost:9001/work
 
 
-##### Can we create a even bigger load?
+## Can we create a even bigger load?
 
 Siege is a tool for performing load testing of a site.
 
 ```
-vagrant@ubuntu-bionic:/bakerx/metrics$ siege -b -t30s http://172.30.164.193:9001/
+vagrant@ubuntu-bionic:/bakerx/metrics$ siege -b -t30s http://192.168.56.1:9001/
 ** SIEGE 4.0.4
 ** Preparing 25 concurrent users for battle.
 The server is now under siege...
@@ -225,6 +132,39 @@ siege -b -t30s http://localhost:9001/stackless
 siege -b -t30s http://localhost:9001/work
 ```
 
-### Task 5: New metric.
+## Task 5: New metric.
 
-Add a new metric in the agent and display it in the dashboard. This should help you better understand the flow of the monitoring collection, broadcast mechanics, and display of metrics.
+We have added [CPU Speed] as the new metric. For this following changes were made:
+* Agent: [agent/index.js] the agent's message contains the cpu speed obtained using the [systeminformation] module
+* Metrics: [dashboard/metrics/index.js] the metric was extracted from agent's message and added to the server.
+* Display: [dashboard/www/index.html] here the metric was displayed.
+
+## Conceptual Deployment Questions
+
+1. Compare a channel deployment model with a ring deployment model:
+	In channel deployment changes are promoted to the next channel (alpha, beta, etc.) unless a release engineer decides to fast track a specific change.
+
+	In ring deployment changes are promoted from internal users to early adopters and subsequently to wider groups of users. Any change can stay in a ring for weeks. For a change to leave a ring it may have to be manually signed off and/or paass a more advanced testing. 
+
+2. Identify 2 situations where an expand/contract deployment could be useful:
+	* If we want to implement a feature change immediately, without affecting existing functionalities.
+	* Updates to a database without affecting availability of old data.
+
+3. What are some tradeoffs associated with dark launches?
+	Advantages:
+		* It can eliminate the need to support long-running release branch and reduce merge issues
+		* It allows for stability and experimentation as developers can test in production
+		* It improves the speed of disaster recovery as there is no rollback involved, just simply turn off the feature.
+
+	Disadvantages:
+		* Removing flags is a highly variable practice and reusing old flags can lead to unprecedented changes.
+		* Inconsistent user experiences.
+		* Supporting mulitple combinations of flags can lead to increase in engineering costs and reduce stability.
+
+4. Describe the Netflix style green-blue deployment. What can canary analysis tell us?
+	A blue-green deployment strategy involves two duplicate instances of production infrastructure, one instance receives active traffic while one instance remains dormant and on stand-by. There will be a proxy that routes the traffic between the instances. In case of any error or failure, the proxy will switch the traffic over to the standby.
+
+## Screencast
+
+* https://drive.google.com/file/d/1uvqANZ6PbxwAyeOHt1sNlxrNQFGaDxmT/view?usp=sharing
+
