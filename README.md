@@ -141,29 +141,36 @@ We have added [CPU Speed] as the new metric. For this following changes were mad
 
 ## Conceptual Deployment Questions
 
-1. Compare a channel deployment model with a ring deployment model:
+**1. Compare a channel deployment model with a ring deployment model:**
 	In channel deployment changes are promoted to the next channel (alpha, beta, etc.) unless a release engineer decides to fast track a specific change.
 
 	In ring deployment changes are promoted from internal users to early adopters and subsequently to wider groups of users. Any change can stay in a ring for weeks. For a change to leave a ring it may have to be manually signed off and/or paass a more advanced testing. 
 
-2. Identify 2 situations where an expand/contract deployment could be useful:
+**2. Identify 2 situations where an expand/contract deployment could be useful:**
 	* If we want to implement a feature change immediately, without affecting existing functionalities.
 	* Updates to a database without affecting availability of old data.
 
-3. What are some tradeoffs associated with dark launches?
+**3. What are some tradeoffs associated with dark launches?**
 
 	Advantages:
+
+
 		* It can eliminate the need to support long-running release branch and reduce merge issues
 		* It allows for stability and experimentation as developers can test in production
 		* It improves the speed of disaster recovery as there is no rollback involved, just simply turn off the feature.
 
 	Disadvantages:
+
+
 		* Removing flags is a highly variable practice and reusing old flags can lead to unprecedented changes.
 		* Inconsistent user experiences.
 		* Supporting mulitple combinations of flags can lead to increase in engineering costs and reduce stability.
 
-4. Describe the Netflix style green-blue deployment. What can canary analysis tell us?
+**4. Describe the Netflix style green-blue deployment. What can canary analysis tell us?**
+	
 	A blue-green deployment strategy involves two duplicate instances of production infrastructure, one instance receives active traffic while one instance remains dormant and on stand-by. There will be a proxy that routes the traffic between the instances. In case of any error or failure, the proxy will switch the traffic over to the standby.
+
+	Canary analysis can tell us if there is a significant difference between the canary and the baseline metrics. The canary score is calcuated as the ratio of metrics classified as Pass our of the total.
 
 ## Screencast
 
