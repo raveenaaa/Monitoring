@@ -119,7 +119,7 @@ Longest transaction:            0.53
 Shortest transaction:           0.00
 ```
 
-##### Installing siege
+#### Installing siege
 
 Mac: `brew install siege`  
 Linux: `apt-get install siege`  
