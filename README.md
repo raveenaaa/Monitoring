@@ -151,6 +151,7 @@ We have added [CPU Speed] as the new metric. For this following changes were mad
 	* Updates to a database without affecting availability of old data.
 
 3. What are some tradeoffs associated with dark launches?
+
 	Advantages:
 		* It can eliminate the need to support long-running release branch and reduce merge issues
 		* It allows for stability and experimentation as developers can test in production
