@@ -7,15 +7,27 @@ const si = require('systeminformation');
 // TASK 1:
 class Agent
 {
+    round(num) {
+        return Math.round(num * 100) / 100
+    }
+
     memoryLoad()
     {
-       // console.log( os.totalmem(), os.freemem() );
-       return 0;
+        let totalMem = os.totalmem()
+        let freeMem = os.freemem()
+        let usedMemory = (totalMem - freeMem) * 100 / totalMem
+        return this.round(usedMemory)
     }
     async cpu()
     {
        let load = await si.currentLoad();
-       return 0;
+       return this.round(load.currentload);
+    }
+
+    async nodeMem()
+    {
+        let node = await si.processLoad('node');
+        return this.round(node.mem);
     }
 }
 
@@ -46,7 +58,8 @@ async function main(name)
     {
         let payload = {
             memoryLoad: agent.memoryLoad(),
-            cpu: await agent.cpu()
+            cpu: await agent.cpu(),
+            // nodeMem: await agent.nodeMem()
         };
         let msg = JSON.stringify(payload);
         await client.publish(name, msg);

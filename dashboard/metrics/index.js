@@ -20,9 +20,9 @@ catch(e)
 var servers = 
 [
 	{name: "computer", status: "#cccccc", scoreTrend : []},
-	{name: "alpine-01",url:`http://${ip}:9001/`, status: "#cccccc",  scoreTrend : [0]},
-	{name: "alpine-02",url:`http://${ip}:9002/`, status: "#cccccc",  scoreTrend : [0]},
-	{name: "alpine-03",url:`http://${ip}:9003/`, status: "#cccccc",  scoreTrend : [0]}
+	{name: "alpine-01", url:`http://${ip}:9001/`, status: "#cccccc",  scoreTrend : [0]},
+	{name: "alpine-02", url:`http://${ip}:9002/`, status: "#cccccc",  scoreTrend : [0]},
+	{name: "alpine-03", url:`http://${ip}:9003/`, status: "#cccccc",  scoreTrend : [0]}
 ];
 
 
@@ -98,8 +98,8 @@ function start(app)
 				got(server.url, {timeout: 5000, throwHttpErrors: false}).then(function(res)
 				{
 					// TASK 2
-					// captureServer.statusCode = ???;
-					// captureServer.latency = ???;
+					captureServer.statusCode = res.statusCode
+					captureServer.latency = Date.now() - now;
 				}).catch( e => 
 				{
 					// console.log(e);
@@ -116,7 +116,26 @@ function updateHealth(server)
 {
 	let score = 0;
 	// Update score calculation.
+	if (server.statusCode == 200) {
 
+		score += 1
+
+	}
+
+	if (server.latency < 5000) {
+
+		score += 1
+	}
+
+	if (server.memoryLoad < 100) {
+
+		score += 1
+	}
+
+	if (server.cpu < 100) {
+
+		score += 1
+	}
 	server.status = score2color(score/4);
 
 	console.log(`${server.name} ${score}`);
