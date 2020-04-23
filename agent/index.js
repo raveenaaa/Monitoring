@@ -11,6 +11,12 @@ class Agent
         return Math.round(num * 100) / 100
     }
 
+    async cpuSpeed()
+    {
+        let speed = await si.cpuCurrentspeed();
+        return this.round(speed.avg);
+    }
+
     memoryLoad()
     {
         let totalMem = os.totalmem()
@@ -22,12 +28,6 @@ class Agent
     {
        let load = await si.currentLoad();
        return this.round(load.currentload);
-    }
-
-    async nodeMem()
-    {
-        let node = await si.processLoad('node');
-        return this.round(node.mem);
     }
 }
 
@@ -59,7 +59,7 @@ async function main(name)
         let payload = {
             memoryLoad: agent.memoryLoad(),
             cpu: await agent.cpu(),
-            // nodeMem: await agent.nodeMem()
+            cpuSpeed: await agent.cpuSpeed()
         };
         let msg = JSON.stringify(payload);
         await client.publish(name, msg);

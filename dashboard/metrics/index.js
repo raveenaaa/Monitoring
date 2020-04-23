@@ -75,8 +75,10 @@ function start(app)
 			if( server.name == channel)
 			{
 				let payload = JSON.parse(message);
+				// console.log(message);
 				server.memoryLoad = payload.memoryLoad;
 				server.cpu = payload.cpu;
+				server.cpuSpeed = payload.cpuSpeed;
 				updateHealth(server);
 			}
 		}
@@ -102,7 +104,7 @@ function start(app)
 					captureServer.latency = Date.now() - now;
 				}).catch( e => 
 				{
-					// console.log(e);
+					console.log(e);
 					captureServer.statusCode = e.code;
 					captureServer.latency = 5000;
 				});
