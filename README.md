@@ -168,7 +168,7 @@ Disadvantages:
 	
 A blue-green deployment strategy involves two duplicate instances of production infrastructure, one instance receives active traffic while one instance remains dormant and on stand-by. There will be a proxy that routes the traffic between the instances. In case of any error or failure, the proxy will switch the traffic over to the standby.
 
-Canary analysis can tell us if there is a significant difference between the canary and the baseline metrics. The canary score is calcuated as the ratio of metrics classified as Pass our of the total.
+Canary analysis can tell us if there is a significant difference between the canary and the baseline metrics. The canary score is calcuated as the ratio of metrics classified as Pass out of the total.
 
 ## Screencast
 
