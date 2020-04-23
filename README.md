@@ -176,5 +176,5 @@ Canary analysis can tell us if there is a significant difference between the can
 
 
 ### NOTE:
-* For the screencast I have used port `9004` instead of `9001` for `alpine-01`. This is because I couldn't reach the VM at [localhost:9001/] and I was getting a 404 error. The reason for this is that the port `9001` was already occupied by a process which I couldn't stop due to insufficient privileges. I did switch it back to `9001` while pushing it to the repository.
+* For the screencast I have used port `9004` instead of `9001` for `alpine-01`. This is because I couldn't reach the VM at http://localhost:9001/ and I was getting a 404 error. The reason for this is that the port `9001` was already occupied by a process which I couldn't stop due to insufficient privileges. I did switch it back to `9001` while pushing it to the repository.
 
