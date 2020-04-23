@@ -134,10 +134,10 @@ siege -b -t30s http://localhost:9001/work
 
 ## Task 5: New metric.
 
-We have added [CPU Speed] as the new metric. For this following changes were made:
-* Agent: [agent/index.js] the agent's message contains the cpu speed obtained using the [systeminformation] module
-* Metrics: [dashboard/metrics/index.js] the metric was extracted from agent's message and added to the server.
-* Display: [dashboard/www/index.html] here the metric was displayed.
+We have added `CPU Speed` as the new metric. For this following changes were made:
+* Agent: `agent/index.js` the agent's message contains the cpu speed obtained using the `systeminformation` module
+* Metrics: `dashboard/metrics/index.js` the metric was extracted from agent's message and added to the server.
+* Display: `dashboard/www/index.html` here the metric was displayed.
 
 ## Conceptual Deployment Questions
 
